@@ -381,7 +381,7 @@ const FENCE=new RegExp('`{3}(?:luau|lua)?\\n?([\\s\\S]*?)`{3}','g');
 const saveMsgs=()=>store.set('uget.chat',msgs.slice(-40));
 function renderSug(){$('#sug').innerHTML=AIQ[cfg.lang].map((s,i)=>'<button class="sc" data-i="'+i+'">'+icon(s[0])+'<b>'+esc(s[1])+'</b><small>'+esc(s[2])+'</small></button>').join('');$$('#sug .sc').forEach(c=>c.onclick=()=>{$('#aIn').value=AIT[cfg.lang][+c.dataset.i];$('#aIn').focus()})}
 function addMsg(role,text){const d=document.createElement('div');d.className='msg '+role;if(role==='u')d.textContent=text;else{let last=0,m;FENCE.lastIndex=0;while((m=FENCE.exec(text))){if(m.index>last){const s=document.createElement('span');s.textContent=text.slice(last,m.index);d.appendChild(s)}const b=document.createElement('div');b.className='cb';const pre=document.createElement('pre');pre.textContent=m[1];const cp=document.createElement('button');cp.innerHTML=icon('copy');cp.onclick=()=>copyText(pre.textContent);b.append(pre,cp);d.appendChild(b);last=m.index+m[0].length}if(last<text.length){const s=document.createElement('span');s.textContent=text.slice(last);d.appendChild(s)}}$('#chat').appendChild(d);$('#chat').scrollTop=1e9}
-const renderChat=()=>{$('#chat').innerHTML='';msgs.forEach(m=>addMsg(m.role==='user'?'u':'a',String(m.content||'')))};
+const renderChat=()=>{$('#chat').innerHTML='';msgs.forEach(m=>addMsg(m.role==='user'?'u':'a',String(m.content||'')));if(typeof updTurns==='function')updTurns()};
 function tyOn(){tyOff();tyEl=document.createElement('div');tyEl.className='msg a ty';tyEl.innerHTML='<i></i><i></i><i></i>';$('#chat').appendChild(tyEl);$('#chat').scrollTop=1e9}
 const tyOff=()=>{if(tyEl){tyEl.remove();tyEl=null}};
 const aAtSet=n=>{const c=$('#aAt');if(n){$('#aAtN').textContent=n;c.classList.add('on')}else{c.classList.remove('on');$('#aAtN').textContent=''}};
@@ -491,8 +491,6 @@ $('#mThink').onclick=()=>{cfg.depth='think';saveCfg();paintMode()};
 $('#aStop').onclick=()=>{if(aiCtl)aiCtl.abort()};
 $('#aRegen').onclick=()=>{if(aBusy)return;let ui=-1;for(let i=msgs.length-1;i>=0;i--){if(msgs[i].role==='user'){ui=i;break}}if(ui<0){toast(T('ai.ph'),1);return}const q=String(msgs[ui].content||'');msgs=msgs.slice(0,ui);saveMsgs();renderChat();updTurns();$('#aIn').value=q;aiSend()};
 $('#aIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();aiSend()}});
-const _renderChat=renderChat;
-renderChat=function(){_renderChat();updTurns()};
 const _applyLang2=applyLang;
 applyLang=function(){_applyLang2();paintMode();updTurns()};
 paintMode();updTurns();
