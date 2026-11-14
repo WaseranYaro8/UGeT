@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#070A12" id="metaTheme"><title>UGeT</title><!--UGET_UPGRADE_V2--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#070A12" id="metaTheme"><title>UGeT</title><!--UGET_UPGRADE_V3--><!--UGET_UPGRADE_V2--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--acc:#6FD7FF;--acc2:#FFB13D;--edge:rgba(111,215,255,.2);--edge2:rgba(111,215,255,.46);--glowc:rgba(111,215,255,.28);--ink:#EDF2F7;--dim:#93A1B0;--ok:#58E6A8;--danger:#FF8A97;--panel:rgba(10,13,19,.62);--panel2:rgba(14,18,26,.7);--mono:"JetBrains Mono",ui-monospace,Consolas,monospace;--disp:"Space Grotesk","Noto Sans JP",system-ui,sans-serif;--body:"Noto Sans JP","Hiragino Sans",system-ui,sans-serif;--r:14px}
 *{margin:0;padding:0;box-sizing:border-box}body{background:#070A12;color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.75;overflow-x:hidden;-webkit-font-smoothing:antialiased}
@@ -84,6 +84,16 @@ body.no-motion *,body.no-motion *::before,body.no-motion *::after{animation:none
 .noticeline{font-size:12px;color:var(--dim);margin:0 0 12px;padding:8px 12px;border-left:2px solid var(--acc);background:rgba(111,215,255,.05);border-radius:0 8px 8px 0}
 .noticeline:empty{display:none}
 @media(max-width:640px){.imgprev{flex-direction:column}.imgprev img{width:100%;height:160px}}
+
+.uplist{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.uplist:empty{display:none}
+.uprow{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--edge);border-radius:11px;background:rgba(0,0,0,.24);font-size:12px;animation:cardIn .3s backwards}
+.uprow img{width:40px;height:40px;flex:none;object-fit:cover;border-radius:8px;border:1px solid var(--edge)}
+.uprow .un{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.uprow .us{font-family:var(--mono);font-size:10.5px;color:var(--dim);flex:none}
+.uprow.done{border-color:rgba(88,230,168,.5)}.uprow.done .us{color:var(--ok)}
+.uprow.err{border-color:rgba(255,138,151,.5)}.uprow.err .us{color:var(--danger)}
+.uprow .uid{font-family:var(--mono);color:var(--acc);flex:none}
 </style></head><body>
 <canvas id="scene"></canvas><div class="vignette"></div><div class="grain"></div>
 <header id="topnav"><a class="brand" href="#main"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3 4l5 3 4-1 4 1 5-3-2 8-7 8-7-8z"/><path d="M9 12l3 3 3-3" stroke-linecap="round"/></svg><span>UGeT</span></a><span class="conn" id="connDot"></span><nav class="tabs" id="tabs"></nav><button class="lang" id="langBtn">EN</button></header>
@@ -117,7 +127,7 @@ body.no-motion *,body.no-motion *::before,body.no-motion *::after{animation:none
 <div class="sec-head"><span class="sec-ic" data-ic="upload"></span><div><div class="sec-title" data-i18n="up.title"></div><div class="sec-sub" data-i18n="up.sub"></div></div></div>
 <p class="notice" id="upCreator"></p>
 <div class="drop" id="drop"><span class="drop-ic" data-ic="cloud"></span><span data-i18n="up.drop"></span><span class="drop-sub" data-i18n="up.formats"></span></div>
-<input type="file" id="upFile" hidden><div class="uppreview" id="upPreview"></div>
+<input type="file" id="upFile" multiple hidden><div class="uppreview" id="upPreview"></div><div class="uplist" id="upList"></div>
 <div class="bar"><input class="inp grow" id="upName" data-i18n-ph="up.name" autocomplete="off"><select class="sel" id="upType"><option value="Decal" data-i18n="up.t.image"></option><option value="Audio" data-i18n="up.t.audio"></option><option value="Model" data-i18n="up.t.model"></option><option value="Video" data-i18n="up.t.video"></option><option value="Animation" data-i18n="up.t.anim"></option></select></div>
 <div class="field"><span class="f-lab" data-i18n="up.desc"></span><input class="inp" id="upDesc" style="width:100%" autocomplete="off"></div>
 <button class="btn primary wide" id="upBtn" data-i18n="up.btn"></button>
@@ -369,6 +379,29 @@ $("#admSave2").onclick=()=>admPost({notice:$("#noticeInput").value.trim(),feat_a
 const _applyLang=applyLang;
 applyLang=function(){_applyLang();$("#uidBadge").title=t("ai.space");if(MODELS.length)$("#modelSel").value=cfg.model};
 loadModels();pollUpgrade();applyLang();
+
+
+/* ==== UGET_UPGRADE_V3 ==== */
+Object.assign(I18N.ja,{"up.any":"画像はどの形式でもOK(自動でPNG化) / 音声 mp3,ogg,wav,flac / モデル fbx,gltf,glb,rbxm,rbxmx / 動画 mp4,mov / アニメ rbxm,rbxmx ・1ファイル20MB","up.queue":"待機","up.conv":"変換中","up.up":"送信中","up.wait":"Roblox処理中","up.oks":"件 発行完了","up.paste":"画像を貼り付け(Ctrl+V)でも追加できます","up.multi":"複数ファイル同時選択OK"});
+Object.assign(I18N.en,{"up.any":"Any image format (auto-converted to PNG) / Audio mp3,ogg,wav,flac / Model fbx,gltf,glb,rbxm,rbxmx / Video mp4,mov / Anim rbxm,rbxmx · 20MB each","up.queue":"queued","up.conv":"converting","up.up":"uploading","up.wait":"processing","up.oks":" created","up.paste":"You can also paste images (Ctrl+V)","up.multi":"Multiple files supported"});
+let upQ=[],upRun=false;
+function upRowEl(it,i){const d=document.createElement('div');d.className='uprow'+(it.status==='done'?' done':it.status==='err'?' err':'');d.style.animationDelay=Math.min(i*40,300)+'ms';if(it.thumb){const im=document.createElement('img');im.src=it.thumb;d.appendChild(im)}else{const ic=document.createElement('span');ic.innerHTML=icon('file');d.appendChild(ic.firstChild)}const n=document.createElement('span');n.className='un';n.textContent=it.name;d.appendChild(n);if(it.id){const u=document.createElement('span');u.className='uid';u.textContent=it.id;d.appendChild(u);const c=document.createElement('button');c.className='chip';c.innerHTML=icon('copy');c.onclick=()=>copyText(it.id);d.appendChild(c);const o=document.createElement('a');o.className='chip';o.href='https://www.roblox.com/library/'+it.id;o.target='_blank';o.rel='noopener';o.innerHTML=icon('external');d.appendChild(o)}const s=document.createElement('span');s.className='us';s.textContent=it.msg||t('up.queue');d.appendChild(s);return d}
+function upRender(){const b=$('#upList');b.innerHTML='';upQ.forEach((it,i)=>b.appendChild(upRowEl(it,i)))}
+function toPngB64(f,max){max=max||2048;return fileToDataURL(f).then(u=>new Promise((res,rej)=>{const im=new Image();im.onload=()=>{try{const sc=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*sc));c.height=Math.max(1,Math.round(im.height*sc));c.getContext('2d').drawImage(im,0,0,c.width,c.height);res({b64:c.toDataURL('image/png').split(',')[1],thumb:c.toDataURL('image/png')})}catch(e){rej(e)}};im.onerror=rej;im.src=u}))}
+async function upAdd(files){const st=$('#upStatus');let added=0;for(const f of Array.from(files||[])){if(!f)continue;const base=f.name.replace(/\.[^.]+$/,'').slice(0,44)||'asset';if(/^image\//.test(f.type||'')||/\.(png|jpe?g|bmp|tga|webp|gif|avif|heic|heif)$/i.test(f.name)){if(f.size>20*1024*1024){upQ.push({name:f.name,status:'err',msg:t('up.tooLarge')});continue}const it={name:base+'.png',file:f,assetType:'Decal',ctype:'image/png',status:'conv',msg:t('up.conv')};upQ.push(it);added++;upRender();try{const r=await toPngB64(f);it.b64=r.b64;it.thumb=r.thumb;it.status='queue';it.msg=t('up.queue')}catch(e){it.status='err';it.msg=t('err.file')}upRender();continue}const d=detect(f);if(!d){upQ.push({name:f.name,status:'err',msg:t('up.badType')});continue}if(f.size>20*1024*1024){upQ.push({name:f.name,status:'err',msg:t('up.tooLarge')});continue}const ty=($('#upType').value==='Animation'&&/\.(rbxm|rbxmx)$/i.test(f.name))?'Animation':d[0];upQ.push({name:base,file:f,assetType:ty,ctype:(ty==='Animation'?'model/x-rbxm':d[1]),status:'queue',msg:t('up.queue')});added++}upRender();if(added){st.textContent=added+' '+t('up.queue');st.className='status'}}
+async function upOne(it,idx){it.status='up';it.msg=t('up.up');upRender();try{if(!it.b64){const buf=await it.file.arrayBuffer();it.b64=bufToB64(buf)}const nm=($('#upName').value.trim()||it.name).slice(0,44)+(upQ.length>1?'-'+(idx+1):'');const r=await api('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:nm,desc:$('#upDesc').value.trim(),assetType:it.assetType,ctype:it.ctype,filename:it.name,data:it.b64})},120000);if(!r.data.op)throw Object.assign(new Error(),{code:r.data.error||'upstream'});it.msg=t('up.wait');upRender();let res=null;for(let i=0;i<100;i++){await new Promise(z=>setTimeout(z,3000));const s=await api('/api/upload/status?op='+encodeURIComponent(r.data.op),{},30000);if(s.data.done){res=s.data;break}}if(!res)throw Object.assign(new Error(),{code:'upstream'});if(res.error)throw Object.assign(new Error(),{code:res.error});it.id=res.assetId;it.status='done';it.msg=t('up.ok');let hh=store.get('uget.uploads',[]);if(!Array.isArray(hh))hh=[];store.set('uget.uploads',[{name:nm,id:res.assetId},...hh].slice(0,10));$('#upId').textContent=res.assetId;$('#upOpenLink').href='https://www.roblox.com/library/'+res.assetId;$('#upMod').textContent=res.moderation?t('up.moderation')+res.moderation:'';$('#upResult').classList.add('on')}catch(e){it.status='err';it.msg=e.code==='not_configured'?t('up.needCfg'):msgFor({error:e.code},'up.fail')}upRender()}
+async function upRunAll(){if(upRun)return;const st=$('#upStatus');const pend=upQ.filter(x=>x.status==='queue');if(!pend.length){st.textContent=t('up.noFile');st.className='status err';return}upRun=true;$('#upBtn').disabled=true;$('#upProg').classList.add('on');let n=0;for(let i=0;i<upQ.length;i++){if(upQ[i].status!=='queue')continue;await upOne(upQ[i],i);if(upQ[i].id)n++}upRun=false;$('#upBtn').disabled=false;$('#upProg').classList.remove('on');st.textContent=n+'/'+pend.length+t('up.oks');st.className=n?'status ok':'status err';if(n)toast(n+t('up.oks'));renderHist()}
+(function(){for(const id of ['drop','upFile','upBtn','upType']){const el=$('#'+id);if(!el)continue;const cl=el.cloneNode(true);el.parentNode.replaceChild(cl,el)}
+const dz=$('#drop');const sub=dz.querySelector('.drop-sub');if(sub)sub.setAttribute('data-i18n','up.any');
+$('#drop').onclick=()=>$('#upFile').click();
+$('#upFile').onchange=e=>{upAdd(e.target.files);e.target.value=''};
+['dragover','dragenter'].forEach(ev=>$('#drop').addEventListener(ev,e=>{e.preventDefault();$('#drop').classList.add('over')}));
+['dragleave','drop'].forEach(ev=>$('#drop').addEventListener(ev,e=>{e.preventDefault();$('#drop').classList.remove('over')}));
+$('#drop').addEventListener('drop',e=>{if(e.dataTransfer&&e.dataTransfer.files)upAdd(e.dataTransfer.files)});
+$('#upBtn').onclick=upRunAll;
+addEventListener('paste',e=>{if(curTab!=='upload')return;const fs=[];for(const it of (e.clipboardData&&e.clipboardData.items)||[]){if(it.kind==='file'){const f=it.getAsFile();if(f)fs.push(f)}}if(fs.length){e.preventDefault();upAdd(fs)}});
+const al=applyLang;applyLang=function(){al();const s=$('#drop').querySelector('.drop-sub');if(s)s.textContent=t('up.any')};applyLang();
+})();
 
 })();
 </script></body></html>
