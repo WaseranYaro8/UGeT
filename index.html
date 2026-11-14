@@ -234,7 +234,7 @@ const JH={'Content-Type':'application/json'};
 function msgFor(d,fb){const e=d&&d.error;const m={rate_limited:'err.rate',auth:'err.auth',disabled:'err.disabled',ai_failed:'err.ai',upstream:'err.upstream',rbx_auth:'err.rbxAuth',too_large:'err.tooLarge',spam:'err.spam',bad_type:'err.badType',not_configured:'ai.need',daily_cap:'err.cap'};return T(m[e]||fb||'err.net')}
 const TABS=[['main','search'],['ai','spark'],['chat','chat'],['up','upload'],['set','settings'],['adm','shield']];
 function buildTabs(){$('#tabs').innerHTML=TABS.map(([id,ic])=>'<button class="tab'+(id===tab?' act':'')+'" data-t="'+id+'">'+icon(ic)+'<span>'+T('nav.'+({up:'upload',set:'settings',adm:'admin'}[id]||id))+'</span></button>').join('');$$('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t))}
-function setTab(x){tab=x;$$('.tab').forEach(b=>b.classList.toggle('act',b.dataset.t===x));$$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+x));history.replaceState(null,'','#'+x);if(x==='chat')startChat()}
+function setTab(x){tab=x;$$('.tab').forEach(b=>b.classList.toggle('act',b.dataset.t===x));$$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+x));history.replaceState(null,'','#'+x);if(x==='chat')startChat();if(x==='up'){renderUpWho();poll()}}
 function setOnline(v){online=v;$('#dot').classList.toggle('on',v);$('#pConn').classList.toggle('on',v);$('#pConnT').textContent=T(v?'stat.online':connecting?'stat.connecting':'stat.offline');$('#off').classList.toggle('on',!v);$('#aiPill').classList.toggle('on',v);$('#aiPillT').textContent=T(v?'ai.online':'ai.offline')}
 const isAdm=()=>!!tok;
 const ovShow=()=>$('#ov').classList.toggle('on',maint&&!isAdm());
@@ -395,7 +395,7 @@ applyMotion();$('#sTime').value=cfg.time;$('#sSea').value=cfg.season;$('#sMot').
 applyLang();renderChat();resize();requestAnimationFrame(frame);
 const h0=(location.hash||'').slice(1);setTab(TABS.some(x=>x[0]===h0)?h0:'main');
 if(tok)loadCfg().then(ok=>{if(ok)showOpen();ovShow()});
-setOnline(false);connect();loadModels();poll();setInterval(poll,5000);
+setOnline(false);connect().then(()=>poll());loadModels();setInterval(poll,5000);
 if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 })();
 </script></body></html>
