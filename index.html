@@ -179,8 +179,6 @@ const saveCfgLocal=()=>store.set('uget.cfg',cfg);
 let API_BASE='',connecting=false,lastProbe=0;
 async function probeBase(b){try{const c=new AbortController();const tm=setTimeout(()=>c.abort(),5000);const r=await fetch(b+'/api/health',{signal:c.signal});clearTimeout(tm);return !!(await r.json()).ok}catch(e){return false}}
 let lastGh=0;
-async function bjFrom(u,raw){try{const r=await fetch(u,{cache:'no-store',headers:raw?{'Accept':'application/vnd.github.raw'}:{}});const j=await r.json();return (j&&j.url&&/^https:\/\//.test(j.url))?j.url.replace(/\/+$/,''):''}catch(e){return''}}
-async function tryBase(b){if(await probeBase(b)){API_BASE=b;if(b){cfg.backend=b;saveCfgLocal()}return true}return false}
 let lastGh=0;
 async function bjFrom(u,raw){try{const r=await fetch(u,{cache:'no-store',headers:raw?{'Accept':'application/vnd.github.raw'}:{}});const j=await r.json();return (j&&j.url&&/^https:\/\//.test(j.url))?j.url.replace(/\/+$/,''):''}catch(e){return''}}
 async function tryBase(b){if(await probeBase(b)){API_BASE=b;if(b){cfg.backend=b;saveCfgLocal()}return true}return false}
