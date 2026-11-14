@@ -163,13 +163,26 @@ main{max-width:1180px}
 .pres{min-width:520px}
 }
 @media(hover:none){.card:hover{transform:none}.btn:hover{transform:none}}
+
+.emblem{width:64px;min-width:64px;height:64px;padding:0;border-radius:18px}
+.emblem .ic{width:32px;height:32px}
+.hero{flex-wrap:wrap;row-gap:10px}
+.word{display:flex;align-items:center;line-height:1}
+.word .wlogo{width:clamp(158px,34vw,272px);height:auto;display:block;filter:drop-shadow(0 0 26px var(--glow))}
+@media(max-width:640px){
+.emblem{width:56px;min-width:56px;height:56px;border-radius:16px}
+.emblem .ic{width:28px;height:28px}
+.word .wlogo{width:clamp(138px,42vw,196px)}
+.ver{margin-left:0}
+}
+@media(min-width:641px) and (max-width:1024px){.word .wlogo{width:clamp(190px,26vw,240px)}}
 </style></head><body>
 <canvas id="scene"></canvas><div class="vig"></div><div class="grain"></div>
 <header id="nav"><a class="brand" href="#main"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3 4l5 3 4-1 4 1 5-3-2 8-7 8-7-8z"/><path d="M9 12l3 3 3-3" stroke-linecap="round"/></svg><span>UGeT</span></a><span class="dotc" id="dot"></span><nav class="tabs" id="tabs"></nav><button class="lang" id="lang">EN</button></header>
 <div id="ov"><div class="bx"><h2 data-i18n="maint.title"></h2><p data-i18n="maint.sub"></p><button class="btn gh" id="ovAdm" data-i18n="maint.btn"></button></div></div>
 <main>
 <section class="view on" id="v-main">
-<div class="hero"><div class="emblem" id="emb"></div><div><div class="word">U<span>GeT</span></div><p class="tag" data-i18n="tag.sub"></p></div><span class="ver">v1.0</span></div>
+<div class="hero"><div class="emblem" id="emb"></div><div><div class="word"><svg class="wlogo" viewBox="0 0 240 96" role="img" aria-label="UGeT"><defs><linearGradient id="uglg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="var(--acc)"/><stop offset=".55" stop-color="var(--acc2)"/><stop offset="1" stop-color="var(--acc)"/></linearGradient></defs><g fill="none" stroke="url(#uglg)" stroke-width="5" stroke-linecap="round" opacity=".9"><path d="M16 70C70 92 168 84 226 52"/><path d="M14 30C74 6 172 10 224 30"/></g><g transform="skewX(-13)" fill="url(#uglg)"><text x="30" y="66" font-family="Space Grotesk,Arial,sans-serif" font-weight="700" font-size="54" letter-spacing="1">UGeT</text></g></svg></div><p class="tag" data-i18n="tag.sub"></p></div><span class="ver">v1.0</span></div>
 <div class="pills"><span class="pill" id="pConn"><i></i><span id="pConnT"></span></span><span class="pill" id="pCnt" style="display:none"><span id="pCntT"></span></span></div>
 <div class="ann" id="ann"><span id="annT"></span><button id="annX">×</button></div>
 <div class="note" id="note"></div>
@@ -439,7 +452,7 @@ const h=cur.hour,day=h>=5.5&&h<=18.5,q=day?(h-5.5)/11:((h>18.5?h-18.5:h+5.5)/11)
 ridge(rF,hx(mix(cur.s0,[4,6,11],.62)));ridge(rN,hx(mix(cur.s0,[2,3,7],.8)));drawP();
 const rs=document.documentElement.style;rs.setProperty('--acc',hx(cur.acc));rs.setProperty('--acc2',hx(cur.acc2));rs.setProperty('--edge',rg(cur.acc,.22));rs.setProperty('--edge2',rg(cur.acc,.48));rs.setProperty('--glow',rg(cur.acc,.3));const mt=$('#metaTheme');if(mt)mt.content=hx(cur.acc)}
 let last=performance.now();function frame(now){requestAnimationFrame(frame);if(document.hidden){last=now;return}let dt=(now-last)/1000;last=now;if(dt>.1)dt=.1;ease(cfg.motion?1-Math.exp(-dt*2.4):1);if(cfg.motion)tt+=dt;syncP();if(cfg.motion)updP(dt,SE[sea()].type);draw()}
-$('#emb').innerHTML='<svg class="logo" viewBox="0 0 240 96" aria-label="UGeT"><g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity=".9"><path d="M16 70C70 92 168 84 226 52"/><path d="M14 30C74 6 172 10 224 30"/></g><g transform="skewX(-13)" fill="currentColor"><text x="30" y="66" font-family="Space Grotesk,Arial,sans-serif" font-weight="700" font-size="54" letter-spacing="1">UGeT</text></g></svg>';$('#rnd').innerHTML=icon('dice');$('#aAtB').innerHTML=icon('clip');$('#cAtB').innerHTML=icon('clip');
+$('#emb').innerHTML=icon('shield');$('#rnd').innerHTML=icon('dice');$('#aAtB').innerHTML=icon('clip');$('#cAtB').innerHTML=icon('clip');
 $$('[data-ic]').forEach(e=>e.innerHTML=icon(e.dataset.ic));
 applyMotion();$('#sTime').value=cfg.time;$('#sSea').value=cfg.season;$('#sMot').checked=cfg.motion;$('#assist').checked=!!cfg.assist;
 applyLang();renderChat();resize();requestAnimationFrame(frame);
