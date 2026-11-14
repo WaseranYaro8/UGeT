@@ -1,0 +1,9 @@
+*
+!index.html
+!manifest.webmanifest
+!sw.js
+!icon.svg
+!icon-192.png
+!icon-512.png
+!backend.json
+!.gitignore
