@@ -7,3 +7,5 @@
 !icon-512.png
 !backend.json
 !.gitignore
+check.sh
+cloud.sh
