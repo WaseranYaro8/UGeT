@@ -9,3 +9,5 @@
 !.gitignore
 check.sh
 cloud.sh
+keep.sh
+watch.sh
