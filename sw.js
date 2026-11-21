@@ -1,4 +1,34 @@
-const C='uget-1.0',A=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
-self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(A)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);if(u.origin!==location.origin)return;if(u.pathname.startsWith('/api/')){e.respondWith(fetch(r,{cache:'no-store'}));return}if(r.mode==='navigate'){e.respondWith(fetch(r).then(res=>{caches.open(C).then(c=>c.put('./index.html',res.clone()));return res}).catch(()=>caches.match('./index.html')));return}e.respondWith(caches.match(r).then(h=>h||fetch(r).then(res=>{caches.open(C).then(c=>c.put(r,res.clone()));return res})))});
+const CACHE='uget-20261121-searchfix';
+self.addEventListener('install',()=>self.skipWaiting());
+self.addEventListener('activate',e=>{
+  e.waitUntil((async()=>{
+    for(const k of await caches.keys()){
+      if(k!==CACHE)await caches.delete(k);
+    }
+    await self.clients.claim();
+  })());
+});
+self.addEventListener('fetch',e=>{
+  const u=new URL(e.request.url);
+  if(e.request.method!=='GET')return;
+  if(u.pathname.includes('/api/')||u.pathname.endsWith('backend.json'))return;
+  e.respondWith((async()=>{
+    const cache=await caches.open(CACHE);
+    if(e.request.mode==='navigate'||u.pathname.endsWith('/')||u.pathname.endsWith('.html')){
+      try{
+        const net=await fetch(e.request,{cache:'no-store'});
+        cache.put(e.request,net.clone());
+        return net;
+      }catch(err){
+        const c=await cache.match(e.request);
+        return c||Response.error();
+      }
+    }
+    const c=await cache.match(e.request);
+    const f=fetch(e.request).then(n=>{
+      if(n&&n.status===200)cache.put(e.request,n.clone());
+      return n;
+    }).catch(()=>c);
+    return c||f;
+  })());
+});

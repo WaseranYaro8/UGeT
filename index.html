@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#070A12" id="metaTheme"><title>UGeT</title><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#070A12" id="metaTheme"><title>UGeT</title><!--SEARCHFIX-20261121--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--acc:#6FD7FF;--acc2:#FFB13D;--edge:rgba(111,215,255,.2);--edge2:rgba(111,215,255,.46);--glow:rgba(111,215,255,.28);--ink:#EDF2F7;--dim:#93A1B0;--ok:#58E6A8;--bad:#FF8A97;--p1:rgba(10,13,19,.62);--p2:rgba(14,18,26,.7);--mono:"JetBrains Mono",ui-monospace,monospace;--disp:"Space Grotesk","Noto Sans JP",system-ui,sans-serif;--body:"Noto Sans JP","Hiragino Sans",system-ui,sans-serif;--r:14px}
 *{margin:0;padding:0;box-sizing:border-box}body{background:#070A12;color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.75;overflow-x:hidden;-webkit-font-smoothing:antialiased}
@@ -475,7 +475,23 @@ applyLang();renderChat();resize();requestAnimationFrame(frame);
 const h0=(location.hash||'').slice(1);setTab(TABS.some(x=>x[0]===h0)?h0:'main');
 if(tok)loadCfg().then(ok=>{if(ok)showOpen();ovShow()});
 setOnline(false);connect().then(()=>poll());setInterval(poll,5000);
-if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+const SWV='20261121-searchfix';
+if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol)){
+  addEventListener('load',async()=>{
+    try{
+      const regs=await navigator.serviceWorker.getRegistrations();
+      const old=store.get('uget.swv','');
+      if(old!==SWV){
+        for(const r of regs){try{await r.unregister()}catch(e){}}
+        if(window.caches){
+          try{for(const k of await caches.keys())await caches.delete(k)}catch(e){}
+        }
+        store.set('uget.swv',SWV);
+      }
+      await navigator.serviceWorker.register('sw.js?v='+encodeURIComponent(SWV));
+    }catch(e){}
+  });
+}
 
 async function heartbeat(){try{await api('/api/presence',{method:'POST',headers:JH,body:JSON.stringify({uid:cfg.uid,name:myName||'',tab:tab,href:location.href.slice(0,200),ref:(document.referrer||'').slice(0,200),lang:cfg.lang,screen:screen.width+'x'+screen.height})},9000)}catch(e){}}
 function idleStr(s){if(s<60)return s+'s';if(s<3600)return Math.floor(s/60)+'m';return Math.floor(s/3600)+'h'}
