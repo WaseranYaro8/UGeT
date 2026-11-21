@@ -12,3 +12,5 @@ check.sh
 cloud.sh
 keep.sh
 watch.sh
+up.sh
+uget-daemon
